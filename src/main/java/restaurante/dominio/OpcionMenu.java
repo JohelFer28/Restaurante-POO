@@ -3,24 +3,19 @@ package restaurante.dominio;
 import restaurante.excepciones.DatoInvalidoException;
 import restaurante.util.Formato;
 
-/**
- * Una opcion individual del menu (ej: "Arroz blanco").
- *
- * ENCAPSULAMIENTO: todos los atributos son privados y no hay setters sueltos.
- * Para cambiar datos se usa modificar(), que valida TODO antes de tocar nada
- * (si algun dato es invalido, el objeto queda exactamente como estaba).
- * El constructor es de paquete: solo Menu crea opciones, asi controla los ids.
- */
+// una opcion individual del menu, por ejemplo "Arroz blanco"
+// atributos privados y sin setters sueltos, los cambios pasan por modificar()
 public class OpcionMenu {
     private final int id;
     private final Categoria categoria;
     private String nombre;
     private String descripcion;
-    private int calorias;     // por porcion
-    private int precio;       // en colones
+    private int calorias;   // por porcion
+    private int precio;     // en colones
     private boolean disponible = true;
     private boolean usadaEnPedidos = false;
 
+    // sin public: solo Menu crea opciones, asi controla los ids
     OpcionMenu(int id, String nombre, Categoria categoria, String descripcion, int calorias, int precio)
             throws DatoInvalidoException {
         if (categoria == null) {
@@ -35,7 +30,7 @@ public class OpcionMenu {
         this.precio = precio;
     }
 
-    /** Reglas de validacion centralizadas: las usan el constructor y modificar(). */
+    // las reglas estan aqui para usarlas en el constructor y en modificar()
     private static void validar(String nombre, String descripcion, int calorias, int precio)
             throws DatoInvalidoException {
         if (nombre == null || nombre.isBlank()) {
@@ -52,7 +47,7 @@ public class OpcionMenu {
         }
     }
 
-    /** Valida primero y asigna despues: nunca queda a medio modificar. */
+    // primero valida y despues asigna, si algo falla el objeto queda igual que antes
     public void modificar(String nombre, String descripcion, int calorias, int precio)
             throws DatoInvalidoException {
         validar(nombre, descripcion, calorias, precio);
@@ -66,7 +61,7 @@ public class OpcionMenu {
 
     public void desactivar() { disponible = false; }
 
-    /** Lo llamara Pedido (Parte 3) al registrar esta opcion; desde entonces no se puede eliminar. */
+    // lo va a llamar Pedido al registrar la opcion, desde ahi ya no se puede eliminar
     public void marcarComoUsada() { usadaEnPedidos = true; }
 
     public int getId() { return id; }

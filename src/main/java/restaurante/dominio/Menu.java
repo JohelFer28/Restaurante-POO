@@ -11,29 +11,26 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * El menu completo: administra categorias y opciones.
- * Es la UNICA clase que crea y elimina opciones, asi garantiza ids unicos y reglas de integridad.
- * Los metodos que devuelven listas devuelven COPIAS (o vistas de solo lectura),
- * por eso quien las reciba no puede danar el menu por dentro.
- */
+// administra las categorias y las opciones del menu
+// es la unica clase que crea y elimina opciones, asi controla ids unicos y la integridad
+// los metodos de listado devuelven copias para que nadie dane el menu desde afuera
 public class Menu {
-    private final Map<Integer, OpcionMenu> opciones = new LinkedHashMap<>(); // conserva orden de insercion
+    private final Map<Integer, OpcionMenu> opciones = new LinkedHashMap<>(); // mantiene el orden en que se agregan
     private final List<Categoria> categorias = new ArrayList<>();
     private int siguienteId = 1;
 
-    /** Crea el menu con las 5 categorias minimas que pide el enunciado. */
+    // arranca con las 5 categorias minimas del enunciado
     public Menu() {
         try {
             for (String nombre : new String[]{"Guarniciones", "Proteínas", "Ensaladas", "Postres", "Bebidas"}) {
                 categorias.add(new Categoria(nombre));
             }
         } catch (DatoInvalidoException e) {
-            throw new IllegalStateException("Categorías por defecto inválidas", e); // no deberia pasar nunca
+            throw new IllegalStateException("Categorías por defecto inválidas", e); // no deberia pasar
         }
     }
 
-    // ------------------------------------------------------------ Categorias
+    // categorias
 
     public Categoria agregarCategoria(String nombre) throws DatoInvalidoException {
         Categoria nueva = new Categoria(nombre);
@@ -70,14 +67,14 @@ public class Menu {
         return activas;
     }
 
-    // ------------------------------------------------------------ CRUD de opciones
+    // crud de opciones
 
     public OpcionMenu agregarOpcion(String nombre, Categoria categoria, String descripcion,
                                     int calorias, int precio) throws DatoInvalidoException {
         if (categoria == null || !categorias.contains(categoria)) {
             throw new DatoInvalidoException("La categoría no pertenece a este menú.");
         }
-        // Si el constructor lanza excepcion, siguienteId NO se incrementa (no se "gasta" un id).
+        // si el constructor lanza excepcion, siguienteId no se incrementa
         OpcionMenu nueva = new OpcionMenu(siguienteId, nombre, categoria, descripcion, calorias, precio);
         opciones.put(siguienteId, nueva);
         siguienteId++;
@@ -99,7 +96,7 @@ public class Menu {
 
     public void desactivarOpcion(int id) throws OpcionNoEncontradaException { obtener(id).desactivar(); }
 
-    /** Elimina solo si la opcion nunca fue pedida; si ya fue pedida hay que desactivarla. */
+    // solo se elimina si nunca fue pedida, si ya fue pedida hay que desactivarla
     public void eliminarOpcion(int id) throws OpcionNoEncontradaException, OpcionEnUsoException {
         OpcionMenu o = obtener(id);
         if (o.estaUsadaEnPedidos()) {
@@ -108,13 +105,13 @@ public class Menu {
         opciones.remove(id);
     }
 
-    // ------------------------------------------------------------ Listados
+    // listados
 
     public List<OpcionMenu> listarTodas() {
         return List.copyOf(opciones.values());
     }
 
-    /** Opciones agrupadas por categoria (incluye categorias vacias). El mapa devuelto no se puede modificar. */
+    // opciones agrupadas por categoria (incluye las vacias), el mapa devuelto es de solo lectura
     public Map<Categoria, List<OpcionMenu>> listarPorCategoria(boolean soloDisponibles) {
         Map<Categoria, List<OpcionMenu>> resultado = new LinkedHashMap<>();
         for (Categoria c : categorias) {
@@ -128,7 +125,7 @@ public class Menu {
         return Collections.unmodifiableMap(resultado);
     }
 
-    /** Opciones disponibles de una categoria. Lo usara el filtro calorico (Parte 5). */
+    // opciones disponibles de una categoria, lo va a usar el filtro calorico
     public List<OpcionMenu> opcionesDisponibles(Categoria categoria) {
         List<OpcionMenu> resultado = new ArrayList<>();
         for (OpcionMenu o : opciones.values()) {
@@ -139,9 +136,9 @@ public class Menu {
         return resultado;
     }
 
-    // ------------------------------------------------------------ Busquedas (4 criterios)
+    // busquedas (4 criterios)
 
-    /** Criterio 1: el nombre CONTIENE el texto, sin importar mayusculas ni tildes. */
+    // 1) el nombre contiene el texto, sin importar mayusculas ni tildes
     public List<OpcionMenu> buscarPorNombre(String texto) throws DatoInvalidoException {
         if (texto == null || texto.isBlank()) {
             throw new DatoInvalidoException("Escriba un texto para buscar.");
@@ -156,7 +153,7 @@ public class Menu {
         return resultado;
     }
 
-    /** Criterio 2: todas las opciones (disponibles o no) de una categoria. */
+    // 2) todas las opciones de una categoria (disponibles o no)
     public List<OpcionMenu> buscarPorCategoria(Categoria categoria) throws DatoInvalidoException {
         if (categoria == null) throw new DatoInvalidoException("Debe elegir una categoría.");
         List<OpcionMenu> resultado = new ArrayList<>();
@@ -166,7 +163,7 @@ public class Menu {
         return resultado;
     }
 
-    /** Criterio 3: calorias entre min y max, ambos INCLUIDOS. */
+    // 3) calorias entre min y max, ambos incluidos
     public List<OpcionMenu> buscarPorRangoCalorias(int min, int max) throws DatoInvalidoException {
         validarRango(min, max, "calorías");
         List<OpcionMenu> resultado = new ArrayList<>();
@@ -176,7 +173,7 @@ public class Menu {
         return resultado;
     }
 
-    /** Criterio 4: precio entre min y max, ambos INCLUIDOS. */
+    // 4) precio entre min y max, ambos incluidos
     public List<OpcionMenu> buscarPorRangoPrecio(int min, int max) throws DatoInvalidoException {
         validarRango(min, max, "precio");
         List<OpcionMenu> resultado = new ArrayList<>();

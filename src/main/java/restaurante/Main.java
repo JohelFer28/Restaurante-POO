@@ -9,7 +9,7 @@ import restaurante.excepciones.RestauranteException;
 import java.util.List;
 import java.util.Map;
 
-/** Punto de entrada. Por ahora es una demo de consola de la Parte 1; luego lo reemplaza la GUI. */
+// por ahora es una demo de consola de la parte 1, despues lo reemplaza la GUI
 public class Main {
     public static void main(String[] args) {
         Menu menu = DatosDemo.crearMenuDemo();
@@ -32,7 +32,7 @@ public class Main {
             System.out.println("\n=== Precio negativo (debe fallar) ===");
             menu.agregarOpcion("Error", menu.buscarCategoria("Postres"), "x", 100, -5);
         } catch (RestauranteException e) {
-            // Aqui la GUI mostraria el mensaje en un cuadro de dialogo
+            // aqui la GUI va a mostrar el mensaje en un cuadro de dialogo
             System.out.println("  Error controlado: " + e.getMessage());
         }
     }
