@@ -1,10 +1,7 @@
 package restaurante.excepciones;
 
-/**
- * Se lanza al intentar eliminar una opcion que ya aparece en algun pedido.
- * Es la "restriccion de integridad" del enunciado: no se puede borrar algo
- * que el historial de ventas necesita. La alternativa es desactivarla.
- */
+// no se puede eliminar una opcion que ya aparece en un pedido
+// el historial la necesita, lo que se hace es desactivarla
 public class OpcionEnUsoException extends RestauranteException {
     private static final long serialVersionUID = 1L;
 

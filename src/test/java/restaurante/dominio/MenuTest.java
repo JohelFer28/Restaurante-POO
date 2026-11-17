@@ -43,7 +43,7 @@ class MenuTest {
     void modificarInvalidoDejaLaOpcionIntacta() throws Exception {
         OpcionMenu flan = menu.agregarOpcion("Flan", postres, "Flan casero", 260, 2200);
         assertThrows(DatoInvalidoException.class, () -> menu.modificarOpcion(flan.getId(), "Nuevo", "x", 100, -50));
-        assertEquals("Flan", flan.getNombre());   // ni el nombre cambio
+        assertEquals("Flan", flan.getNombre());   // el nombre tampoco cambio
         assertEquals(2200, flan.getPrecio());
     }
 
@@ -94,7 +94,7 @@ class MenuTest {
         OpcionMenu flan = menu.agregarOpcion("Flan", postres, "x", 260, 2200);
         menu.desactivarOpcion(flan.getId());
         assertTrue(menu.opcionesDisponibles(postres).isEmpty());
-        assertEquals(1, menu.buscarPorCategoria(postres).size()); // la busqueda si la ve
+        assertEquals(1, menu.buscarPorCategoria(postres).size()); // la busqueda por categoria si la encuentra
     }
 
     @Test

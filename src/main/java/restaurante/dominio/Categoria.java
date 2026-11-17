@@ -3,15 +3,12 @@ package restaurante.dominio;
 import restaurante.excepciones.DatoInvalidoException;
 import restaurante.util.Texto;
 
-/**
- * Categoria del menu (Guarniciones, Proteinas, ...).
- * Es una clase y no un enum porque el enunciado permite agregar categorias nuevas en ejecucion.
- * El constructor y cambiarActiva() son de paquete: solo Menu puede crear y activar categorias.
- */
+// es clase y no enum porque se pueden agregar categorias nuevas mientras corre el programa
 public final class Categoria {
     private final String nombre;
     private boolean activa = true;
 
+    // constructor y cambiarActiva sin public: solo Menu las usa
     Categoria(String nombre) throws DatoInvalidoException {
         if (nombre == null || nombre.isBlank()) {
             throw new DatoInvalidoException("El nombre de la categoría no puede estar vacío.");
@@ -25,7 +22,8 @@ public final class Categoria {
 
     void cambiarActiva(boolean activa) { this.activa = activa; }
 
-    /** Dos categorias son iguales si tienen el mismo nombre (sin importar tildes ni mayusculas). */
+    // dos categorias son iguales si tienen el mismo nombre (sin tildes ni mayusculas)
+    // equals y hashCode siempre se definen juntos
     @Override
     public boolean equals(Object otro) {
         if (this == otro) return true;

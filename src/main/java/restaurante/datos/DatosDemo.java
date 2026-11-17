@@ -3,14 +3,14 @@ package restaurante.datos;
 import restaurante.dominio.Menu;
 import restaurante.excepciones.DatoInvalidoException;
 
-/** Menu precargado para demostracion (el enunciado exige que el sistema ya traiga opciones). */
+// menu precargado para la demostracion (el enunciado pide que el sistema ya traiga opciones)
 public final class DatosDemo {
     private DatosDemo() { }
 
     public static Menu crearMenuDemo() {
         Menu m = new Menu();
         try {
-            // nombre, categoria, descripcion, calorias, precio en colones
+            // orden: nombre, categoria, descripcion, calorias, precio en colones
             m.agregarOpcion("Arroz blanco", m.buscarCategoria("Guarniciones"), "Arroz blanco cocido al vapor", 180, 1500);
             m.agregarOpcion("Puré de papa", m.buscarCategoria("Guarniciones"), "Puré cremoso con mantequilla", 220, 1800);
             m.agregarOpcion("Papas fritas", m.buscarCategoria("Guarniciones"), "Papas en bastones fritas", 365, 2200);
