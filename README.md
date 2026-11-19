@@ -9,6 +9,8 @@ Proyecto de Programación Orientada a Objetos (Tec). Equipo de 2 personas.
 - **Persistencia:** JSON con Gson (Parte 6); por ahora el menú se precarga desde `DatosDemo`
 - **Pruebas:** JUnit 5
 - **Dinero:** enteros en colones (sin decimales, sin errores de redondeo)
+- **Alias de comensales:** únicos dentro de la visita, sin importar mayúsculas ni tildes
+- **Estados de la mesa:** Disponible, Ocupada, Pendiente de pago (sigue ocupada hasta cerrar la visita)
 - **Filtro calórico:** una opción por categoría activa, más la proteína elegida
 - **Impuestos/vuelto:** no se incluyen; el total es la suma de precios del menú
 
@@ -30,7 +32,7 @@ Pruebas: `mvn test` o clic derecho en `src/test` > Run.
 ## Progreso
 - [x] Parte 0: estructura del proyecto
 - [x] Parte 1: menú, categorías, CRUD, 4 búsquedas, excepciones
-- [ ] Parte 2: mesas y visitas (State)
+- [x] Parte 2: mesas y visitas (patrón State)
 - [ ] Parte 3: pedidos
 - [ ] Parte 4: cuenta, pagos y cierre
 - [ ] Parte 5: filtro calórico (Strategy)

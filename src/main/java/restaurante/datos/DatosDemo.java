@@ -1,6 +1,7 @@
 package restaurante.datos;
 
 import restaurante.dominio.Menu;
+import restaurante.dominio.Restaurante;
 import restaurante.excepciones.DatoInvalidoException;
 
 // menu precargado para la demostracion (el enunciado pide que el sistema ya traiga opciones)
@@ -38,5 +39,14 @@ public final class DatosDemo {
             throw new IllegalStateException("Los datos de demostración son inválidos", e);
         }
         return m;
+    }
+
+    // restaurante con 8 mesas y el menu de demostracion
+    public static Restaurante crearRestauranteDemo() {
+        try {
+            return new Restaurante(8, crearMenuDemo());
+        } catch (DatoInvalidoException e) {
+            throw new IllegalStateException("Los datos de demostración son inválidos", e);
+        }
     }
 }
