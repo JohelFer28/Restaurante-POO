@@ -2,12 +2,15 @@ package restaurante.dominio;
 
 import restaurante.excepciones.DatoInvalidoException;
 import restaurante.excepciones.MesaNoDisponibleException;
+import restaurante.excepciones.PagoInvalidoException;
+import restaurante.excepciones.PedidoNoPermitidoException;
+import restaurante.excepciones.SaldoPendienteException;
 import restaurante.excepciones.TransicionInvalidaException;
 
 import java.util.List;
 
 // el contexto del patron State: la mesa no decide nada, le pasa la operacion a su estado
-// el estado nunca se asigna desde afuera, solo cambia con abrirVisita, solicitarCuenta y cerrarVisita
+// el estado nunca se asigna desde afuera, solo cambia con las operaciones de abajo
 public class Mesa {
     private final int numero;
     private EstadoMesa estado = new EstadoDisponible();
@@ -23,11 +26,31 @@ public class Mesa {
         return estado.abrir(this, mesero, aliases);
     }
 
-    public void solicitarCuenta() throws TransicionInvalidaException {
-        estado.solicitarCuenta(this);
+    // primero se le pregunta al estado si se puede, despues se le pide el trabajo a la visita
+    public LineaPedido agregarPedido(String alias, OpcionMenu opcion, int cantidad)
+            throws PedidoNoPermitidoException, DatoInvalidoException {
+        estado.validarPedido(this);
+        return visitaActual.agregarPedido(alias, opcion, cantidad);
     }
 
-    public Visita cerrarVisita() throws TransicionInvalidaException {
+    public void anularPedido(int idLinea, String motivo)
+            throws PedidoNoPermitidoException, DatoInvalidoException {
+        estado.validarPedido(this);
+        visitaActual.anularPedido(idLinea, motivo);
+    }
+
+    public void solicitarCuenta(ModalidadCuenta modalidad)
+            throws TransicionInvalidaException, DatoInvalidoException {
+        estado.solicitarCuenta(this, modalidad);
+    }
+
+    // en cuenta conjunta el alias va en null, en pagos por persona es obligatorio
+    public Pago registrarPago(String alias, int monto, MetodoPago metodo)
+            throws TransicionInvalidaException, PagoInvalidoException {
+        return estado.registrarPago(this, alias, monto, metodo);
+    }
+
+    public Visita cerrarVisita() throws TransicionInvalidaException, SaldoPendienteException {
         return estado.cerrar(this);
     }
 
