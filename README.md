@@ -11,7 +11,11 @@ Proyecto de Programación Orientada a Objetos (Tec). Equipo de 2 personas.
 - **Dinero:** enteros en colones (sin decimales, sin errores de redondeo)
 - **Alias de comensales:** únicos dentro de la visita, sin importar mayúsculas ni tildes
 - **Estados de la mesa:** Disponible, Ocupada, Pendiente de pago (sigue ocupada hasta cerrar la visita)
-- **Filtro calórico:** una opción por categoría activa, más la proteína elegida
+- **Pedidos:** solo se pueden hacer o anular mientras la mesa está Ocupada; al solicitar la cuenta ya no se agrega nada. Cantidad de 1 a 99 por renglón
+- **Anulación:** el pedido no se borra, queda marcado como anulado con fecha y motivo, y no cuenta en los totales
+- **Pagos:** cuenta conjunta o pagos por persona (se elige al solicitar la cuenta). El monto debe ser positivo y no puede exceder el saldo; no se maneja vuelto
+- **Métodos de pago:** efectivo, tarjeta y SINPE Móvil (todos ficticios, con referencia simulada)
+- **Filtro calórico:** una opción por categoría activa, más la proteína elegida. Las categorías requeridas son todas las activas menos proteínas, o las que el cliente escoja
 - **Impuestos/vuelto:** no se incluyen; el total es la suma de precios del menú
 
 ## Estructura
@@ -19,6 +23,7 @@ Proyecto de Programación Orientada a Objetos (Tec). Equipo de 2 personas.
 |---|---|
 | `restaurante.dominio` | Clases con las reglas de negocio (Menu, OpcionMenu, Categoria...) |
 | `restaurante.excepciones` | Excepciones propias del sistema |
+| `restaurante.recomendacion` | Filtro calórico: interfaz Strategy, dos algoritmos y el servicio |
 | `restaurante.util` | Utilidades (formato de dinero, texto sin tildes) |
 | `restaurante.datos` | Datos de demostración |
 | `restaurante.servicios` | (Partes siguientes) coordinan casos de uso |
@@ -33,9 +38,9 @@ Pruebas: `mvn test` o clic derecho en `src/test` > Run.
 - [x] Parte 0: estructura del proyecto
 - [x] Parte 1: menú, categorías, CRUD, 4 búsquedas, excepciones
 - [x] Parte 2: mesas y visitas (patrón State)
-- [ ] Parte 3: pedidos
-- [ ] Parte 4: cuenta, pagos y cierre
-- [ ] Parte 5: filtro calórico (Strategy)
+- [x] Parte 3: pedidos y subtotales
+- [x] Parte 4: cuenta, pagos y cierre
+- [x] Parte 5: filtro calórico (patrón Strategy)
 - [ ] Parte 6: estadísticas (Observer) y persistencia
 - [ ] Parte 7: interfaz gráfica
 - [ ] Parte 8: pruebas finales y video

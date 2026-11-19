@@ -73,7 +73,7 @@ class RestauranteTest {
 
     @Test
     void solicitarCuentaEnMesaLibreLanzaExcepcionYNoCambiaElEstado() throws Exception {
-        assertThrows(TransicionInvalidaException.class, () -> restaurante.solicitarCuenta(1));
+        assertThrows(TransicionInvalidaException.class, () -> restaurante.solicitarCuenta(1, ModalidadCuenta.CONJUNTA));
         assertTrue(restaurante.obtenerMesa(1).estaDisponible());
     }
 
@@ -88,7 +88,7 @@ class RestauranteTest {
     @Test
     void mesaPendientePagoSigueOcupada() throws Exception {
         restaurante.abrirVisita(1, mesero, List.of("Ana"));
-        restaurante.solicitarCuenta(1);
+        restaurante.solicitarCuenta(1, ModalidadCuenta.CONJUNTA);
         assertThrows(MesaNoDisponibleException.class,
                 () -> restaurante.abrirVisita(1, mesero, List.of("Pedro")));
         assertEquals("Pendiente de pago", restaurante.obtenerMesa(1).getNombreEstado());
@@ -97,7 +97,7 @@ class RestauranteTest {
     @Test
     void cicloCompletoDejaLaMesaLibreYGuardaElHistorial() throws Exception {
         restaurante.abrirVisita(1, mesero, List.of("Ana"));
-        restaurante.solicitarCuenta(1);
+        restaurante.solicitarCuenta(1, ModalidadCuenta.CONJUNTA);
         Visita cerrada = restaurante.cerrarVisita(1);
 
         assertTrue(restaurante.obtenerMesa(1).estaDisponible());

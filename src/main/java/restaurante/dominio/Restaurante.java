@@ -2,6 +2,10 @@ package restaurante.dominio;
 
 import restaurante.excepciones.DatoInvalidoException;
 import restaurante.excepciones.MesaNoDisponibleException;
+import restaurante.excepciones.OpcionNoEncontradaException;
+import restaurante.excepciones.PagoInvalidoException;
+import restaurante.excepciones.PedidoNoPermitidoException;
+import restaurante.excepciones.SaldoPendienteException;
 import restaurante.excepciones.TransicionInvalidaException;
 
 import java.util.ArrayList;
@@ -40,14 +44,33 @@ public class Restaurante {
         return obtenerMesa(numeroMesa).abrirVisita(mesero, aliases);
     }
 
-    public void solicitarCuenta(int numeroMesa)
-            throws MesaNoDisponibleException, TransicionInvalidaException {
-        obtenerMesa(numeroMesa).solicitarCuenta();
+    // el pedido se hace con el id de la opcion, asi la GUI solo necesita el numero que ve en pantalla
+    public LineaPedido agregarPedido(int numeroMesa, String alias, int idOpcion, int cantidad)
+            throws MesaNoDisponibleException, OpcionNoEncontradaException,
+                   PedidoNoPermitidoException, DatoInvalidoException {
+        Mesa mesa = obtenerMesa(numeroMesa);
+        OpcionMenu opcion = menu.obtener(idOpcion);
+        return mesa.agregarPedido(alias, opcion, cantidad);
     }
 
-    // al cerrar, la visita pasa al historial (lo van a usar las estadisticas)
+    public void anularPedido(int numeroMesa, int idLinea, String motivo)
+            throws MesaNoDisponibleException, PedidoNoPermitidoException, DatoInvalidoException {
+        obtenerMesa(numeroMesa).anularPedido(idLinea, motivo);
+    }
+
+    public void solicitarCuenta(int numeroMesa, ModalidadCuenta modalidad)
+            throws MesaNoDisponibleException, TransicionInvalidaException, DatoInvalidoException {
+        obtenerMesa(numeroMesa).solicitarCuenta(modalidad);
+    }
+
+    public Pago registrarPago(int numeroMesa, String alias, int monto, MetodoPago metodo)
+            throws MesaNoDisponibleException, TransicionInvalidaException, PagoInvalidoException {
+        return obtenerMesa(numeroMesa).registrarPago(alias, monto, metodo);
+    }
+
+    // al cerrar, la visita (con sus pedidos y pagos) pasa al historial para las estadisticas
     public Visita cerrarVisita(int numeroMesa)
-            throws MesaNoDisponibleException, TransicionInvalidaException {
+            throws MesaNoDisponibleException, TransicionInvalidaException, SaldoPendienteException {
         Visita cerrada = obtenerMesa(numeroMesa).cerrarVisita();
         historial.add(cerrada);
         return cerrada;

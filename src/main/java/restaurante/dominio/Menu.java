@@ -15,6 +15,9 @@ import java.util.Map;
 // es la unica clase que crea y elimina opciones, asi controla ids unicos y la integridad
 // los metodos de listado devuelven copias para que nadie dane el menu desde afuera
 public class Menu {
+    // la categoria de proteinas es especial: el filtro calorico parte de una proteina elegida
+    public static final String NOMBRE_PROTEINAS = "Proteínas";
+
     private final Map<Integer, OpcionMenu> opciones = new LinkedHashMap<>(); // mantiene el orden en que se agregan
     private final List<Categoria> categorias = new ArrayList<>();
     private int siguienteId = 1;
@@ -22,7 +25,7 @@ public class Menu {
     // arranca con las 5 categorias minimas del enunciado
     public Menu() {
         try {
-            for (String nombre : new String[]{"Guarniciones", "Proteínas", "Ensaladas", "Postres", "Bebidas"}) {
+            for (String nombre : new String[]{"Guarniciones", NOMBRE_PROTEINAS, "Ensaladas", "Postres", "Bebidas"}) {
                 categorias.add(new Categoria(nombre));
             }
         } catch (DatoInvalidoException e) {
