@@ -1,9 +1,19 @@
 package restaurante.datos;
 
 import restaurante.dominio.Menu;
+import restaurante.dominio.Mesero;
+import restaurante.dominio.ModalidadCuenta;
+import restaurante.dominio.PagoEfectivo;
+import restaurante.dominio.PagoSinpe;
+import restaurante.dominio.PagoTarjeta;
+import restaurante.dominio.Restaurante;
 import restaurante.excepciones.DatoInvalidoException;
+import restaurante.excepciones.RestauranteException;
+import restaurante.observador.BitacoraEventos;
 
-// menu precargado para la demostracion (el enunciado pide que el sistema ya traiga opciones)
+import java.util.List;
+
+// datos precargados para demostracion y pruebas
 public final class DatosDemo {
     private DatosDemo() { }
 
@@ -38,5 +48,67 @@ public final class DatosDemo {
             throw new IllegalStateException("Los datos de demostración son inválidos", e);
         }
         return m;
+    }
+
+    // restaurante limpio (8 mesas y menu precargado) usado por los tests unitarios
+    public static Restaurante crearRestauranteDemo() {
+        try {
+            return new Restaurante(8, crearMenuDemo());
+        } catch (DatoInvalidoException e) {
+            throw new IllegalStateException("Los datos de demostración son inválidos", e);
+        }
+    }
+
+    // restaurante con visitas cerradas precargadas para que Estadisticas e Historial tengan datos al iniciar la GUI
+    public static Restaurante crearRestauranteConHistorialDemo(BitacoraEventos bitacora) {
+        Restaurante r = crearRestauranteDemo();
+        if (bitacora != null) {
+            r.agregarObservador(bitacora);
+        }
+        try {
+            // Visita historica 1 (Mesa 2 - cuenta conjunta en Tarjeta)
+            r.abrirVisita(2, new Mesero("Carlos"), List.of("Valeria", "Diego"));
+            r.agregarPedido(2, "Valeria", 7, 1);  // Salmon al horno (7500)
+            r.agregarPedido(2, "Valeria", 10, 1); // Ensalada mixta (2500)
+            r.agregarPedido(2, "Valeria", 16, 1); // Agua natural (1000)
+            r.agregarPedido(2, "Diego", 6, 1);    // Filete de res (6500)
+            r.agregarPedido(2, "Diego", 3, 1);    // Papas fritas (2200)
+            r.agregarPedido(2, "Diego", 17, 1);   // Limonada (1500)
+            r.solicitarCuenta(2, ModalidadCuenta.CONJUNTA);
+            r.registrarPago(2, null, 21200, new PagoTarjeta());
+            r.cerrarVisita(2);
+
+            // Visita historica 2 (Mesa 4 - pagos individuales con SINPE y Efectivo)
+            r.abrirVisita(4, new Mesero("Sofía"), List.of("Mateo", "Camila", "Andrés"));
+            r.agregarPedido(4, "Mateo", 5, 1);    // Pechuga a la plancha (4500)
+            r.agregarPedido(4, "Mateo", 1, 1);    // Arroz blanco (1500)
+            r.agregarPedido(4, "Camila", 8, 1);   // Tofu salteado (4000)
+            r.agregarPedido(4, "Camila", 9, 1);   // Ensalada Cesar (3000)
+            r.agregarPedido(4, "Camila", 19, 1);  // Cafe americano (1300)
+            r.agregarPedido(4, "Andrés", 5, 1);   // Pechuga a la plancha (4500)
+            r.agregarPedido(4, "Andrés", 15, 1);  // Brownie (2600)
+            r.agregarPedido(4, "Andrés", 18, 1);  // Refresco natural (1600)
+            r.solicitarCuenta(4, ModalidadCuenta.INDIVIDUAL);
+            r.registrarPago(4, "Mateo", 6000, new PagoSinpe());
+            r.registrarPago(4, "Camila", 8300, new PagoTarjeta());
+            r.registrarPago(4, "Andrés", 8700, new PagoEfectivo());
+            r.cerrarVisita(4);
+
+            // Visita historica 3 (Mesa 6 - grupo familiar)
+            r.abrirVisita(6, new Mesero("Carlos"), List.of("Elena", "Roberto"));
+            r.agregarPedido(6, "Elena", 5, 1);    // Pechuga (4500)
+            r.agregarPedido(6, "Elena", 4, 1);    // Gallo pinto (1700)
+            r.agregarPedido(6, "Elena", 12, 1);   // Flan de coco (2200)
+            r.agregarPedido(6, "Roberto", 6, 1);  // Filete de res (6500)
+            r.agregarPedido(6, "Roberto", 2, 1);  // Pure de papa (1800)
+            r.agregarPedido(6, "Roberto", 17, 2); // 2 Limonadas (3000)
+            r.solicitarCuenta(6, ModalidadCuenta.CONJUNTA);
+            r.registrarPago(6, null, 10000, new PagoEfectivo());
+            r.registrarPago(6, null, 9700, new PagoSinpe());
+            r.cerrarVisita(6);
+        } catch (RestauranteException e) {
+            throw new IllegalStateException("Error preparando visitas demo", e);
+        }
+        return r;
     }
 }
