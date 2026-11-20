@@ -8,7 +8,7 @@ Proyecto de **Programación Orientada a Objetos** — Instituto Tecnológico de 
 
 ---
 
-## Supuestos declarados (Sección 10 del enunciado)
+## Supuestos declarados
 1. **Lenguaje, plataforma y persistencia:** Desarrollado en Java 17+ con gestión de proyecto Maven (`pom.xml`) e interfaz gráfica en Java Swing (`java.desktop`). La persistencia es en memoria con precarga automática desde `DatosDemo` (8 mesas, 21 opciones en 5 categorías —19 disponibles y 2 desactivadas para pruebas— y 3 visitas históricas cerradas para estadísticas).
 2. **Cantidad por categoría en recomendación calórica:** Se genera exactamente **una opción por cada categoría adicional requerida** junto con la proteína elegida (no cantidades múltiples por categoría), evitando combinaciones repetidas y ordenando los resultados de forma determinista por calorías ascendentes y luego por nombre.
 3. **Categorías requeridas y administración de activas:** Para cumplir el filtro mínimo, por defecto se seleccionan como requeridas **todas las categorías activas distintas a Proteínas**, permitiendo además que el usuario marque o desmarque categorías activas específicas desde la interfaz. Si una categoría se desactiva en el menú, deja de exigirse y sus opciones no se ofrecen para nuevos pedidos.
@@ -60,4 +60,4 @@ Proyecto de **Programación Orientada a Objetos** — Instituto Tecnológico de 
 - [x] Parte 5: filtro calórico (patrón Strategy)
 - [x] Parte 6: estadísticas (Observer) y datos precargados
 - [x] Parte 7: interfaz gráfica (Swing)
-- [x] Parte 8: pruebas finales, empaquetado ejecutable y documentación
+- [ ] Parte 8: pruebas finales, empaquetado ejecutable y documentación

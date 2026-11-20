@@ -58,7 +58,16 @@ public class Menu {
 
     public void activarCategoria(Categoria c) { c.cambiarActiva(true); }
 
-    public void desactivarCategoria(Categoria c) { c.cambiarActiva(false); }
+    public void desactivarCategoria(Categoria c) throws DatoInvalidoException {
+        if (c == null) {
+            throw new DatoInvalidoException("Debe elegir una categoría.");
+        }
+        if (Texto.normalizar(c.getNombre()).equals(Texto.normalizar(NOMBRE_PROTEINAS))) {
+            throw new DatoInvalidoException("La categoría \"" + NOMBRE_PROTEINAS
+                    + "\" es obligatoria para el recomendador calórico y no se puede desactivar.");
+        }
+        c.cambiarActiva(false);
+    }
 
     public List<Categoria> getCategorias() { return List.copyOf(categorias); }
 

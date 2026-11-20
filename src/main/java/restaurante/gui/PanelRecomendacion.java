@@ -193,6 +193,12 @@ public class PanelRecomendacion extends JPanel {
                 requeridas.add((Categoria) chk.getClientProperty("categoria"));
             }
         }
+        if (requeridas.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "Seleccione al menos una categoría adicional para calcular combinaciones completas.",
+                    "Validación de Filtro Calórico", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
 
         EstrategiaRecomendacion estrategia = cmbEstrategia.getSelectedIndex() == 1
                 ? new RecomendacionFuerzaBruta()
@@ -212,12 +218,14 @@ public class PanelRecomendacion extends JPanel {
                 StringBuilder detalle = new StringBuilder();
                 for (OpcionMenu op : c.getOpciones()) {
                     if (detalle.length() > 0) detalle.append(" + ");
-                    detalle.append(op.getNombre()).append(" (").append(op.getCalorias()).append(" kcal)");
+                    detalle.append("[").append(op.getCategoria().getNombre()).append("] ")
+                            .append(op.getNombre()).append(" (").append(op.getCalorias()).append(" kcal)");
                 }
                 modeloTabla.addRow(new Object[]{
                         idx++,
-                        c.getProteina().getNombre() + " (" + c.getProteina().getCalorias() + " kcal)",
-                        detalle.length() == 0 ? "Solo proteína" : detalle.toString(),
+                        "[" + c.getProteina().getCategoria().getNombre() + "] "
+                                + c.getProteina().getNombre() + " (" + c.getProteina().getCalorias() + " kcal)",
+                        detalle.toString(),
                         c.getTotalCalorias() + " kcal",
                         Formato.colones(c.getTotalPrecio())
                 });

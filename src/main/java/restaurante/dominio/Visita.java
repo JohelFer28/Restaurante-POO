@@ -100,7 +100,9 @@ public class Visita {
     }
 
     // todos los pedidos, incluidos los anulados (es la bitacora)
-    public List<LineaPedido> getPedidos() { return List.copyOf(lineas); }
+    public List<LineaPedido> getPedidos() {
+        return List.copyOf(lineas);
+    }
 
     public List<LineaPedido> getPedidosActivos() {
         List<LineaPedido> activos = new ArrayList<>();
@@ -199,9 +201,13 @@ public class Visita {
         return pago;
     }
 
-    public ModalidadCuenta getModalidad() { return modalidad; }
+    public ModalidadCuenta getModalidad() {
+        return modalidad;
+    }
 
-    public List<Pago> getPagos() { return List.copyOf(pagos); }
+    public List<Pago> getPagos() {
+        return List.copyOf(pagos);
+    }
 
     public int totalPagado() {
         int total = 0;
@@ -209,7 +215,9 @@ public class Visita {
         return total;
     }
 
-    public int getSaldoPendiente() { return totalMesa() - totalPagado(); }
+    public int getSaldoPendiente() {
+        return totalMesa() - totalPagado();
+    }
 
     // lo que le falta pagar a una persona (se usa en pagos por persona)
     public int saldoComensal(String alias) throws DatoInvalidoException {
@@ -242,21 +250,37 @@ public class Visita {
         this.cierre = LocalDateTime.now();
     }
 
-    public int getNumeroMesa() { return numeroMesa; }
-    public Mesero getMesero() { return mesero; }
-    public LocalDateTime getInicio() { return inicio; }
-    public LocalDateTime getCierre() { return cierre; }
-    public boolean estaAbierta() { return cierre == null; }
+    public int getNumeroMesa() {
+        return numeroMesa;
+    }
+
+    public Mesero getMesero() {
+        return mesero;
+    }
+
+    public LocalDateTime getInicio() {
+        return inicio;
+    }
+
+    public LocalDateTime getCierre() {
+        return cierre;
+    }
+
+    public boolean estaAbierta() {
+        return cierre == null;
+    }
 
     // copia, para que nadie agregue comensales desde afuera
-    public List<Comensal> getComensales() { return List.copyOf(comensales); }
+    public List<Comensal> getComensales() {
+        return List.copyOf(comensales);
+    }
 
     public String resumen() {
         DateTimeFormatter f = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
         StringBuilder sb = new StringBuilder();
         sb.append("Mesa ").append(numeroMesa)
-          .append(" | Mesero: ").append(mesero)
-          .append(" | Inicio: ").append(inicio.format(f));
+                .append(" | Mesero: ").append(mesero)
+                .append(" | Inicio: ").append(inicio.format(f));
         if (cierre != null) {
             sb.append(" | Cierre: ").append(cierre.format(f));
         }
@@ -266,17 +290,32 @@ public class Visita {
             sb.append(comensales.get(i));
         }
 
-        sb.append("\nPedidos:");
+        sb.append("\n\nPedidos:");
         if (lineas.isEmpty()) sb.append(" ninguno");
         for (LineaPedido l : lineas) {
             sb.append("\n  ").append(l);
         }
 
-        sb.append("\nSubtotal por persona:");
+        sb.append("\n\nSubtotal por persona:");
         for (Comensal c : comensales) {
             sb.append("\n  ").append(c).append(": ").append(Formato.colones(subtotalDe(c)));
         }
-        sb.append("\nTotal de la mesa: ").append(Formato.colones(totalMesa()));
+
+        sb.append("\n\nSubtotal por categoría:");
+        Map<String, Integer> porCategoria = subtotalPorCategoria();
+        if (porCategoria.isEmpty()) sb.append(" ninguno");
+        for (Map.Entry<String, Integer> entry : porCategoria.entrySet()) {
+            sb.append("\n  ").append(entry.getKey()).append(": ").append(Formato.colones(entry.getValue()));
+        }
+
+        sb.append("\n\nSubtotal por artículo:");
+        Map<String, Integer> porArticulo = subtotalPorArticulo();
+        if (porArticulo.isEmpty()) sb.append(" ninguno");
+        for (Map.Entry<String, Integer> entry : porArticulo.entrySet()) {
+            sb.append("\n  ").append(entry.getKey()).append(": ").append(Formato.colones(entry.getValue()));
+        }
+
+        sb.append("\n\nTotal de la mesa: ").append(Formato.colones(totalMesa()));
 
         if (modalidad != null) {
             sb.append("\nModalidad: ").append(modalidad);

@@ -17,6 +17,8 @@ import restaurante.dominio.Visita;
 import restaurante.excepciones.DatoInvalidoException;
 import restaurante.excepciones.RestauranteException;
 import restaurante.util.Formato;
+import javax.swing.JTextArea;
+import java.awt.Font;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -392,10 +394,18 @@ public class PanelMesas extends JPanel {
             }
         });
 
+        JButton btnResumen = EstilosUI.botonSecundario("Ver Desglose");
+        btnResumen.addActionListener(e -> mostrarResumenVisita(visita));
+
+        JPanel accionesFila1 = new JPanel(new FlowLayout(FlowLayout.RIGHT, 6, 0));
+        accionesFila1.setBackground(EstilosUI.FONDO_TARJETA);
+        accionesFila1.add(btnResumen);
+        accionesFila1.add(btnAnular);
+
         JPanel filaSur1 = new JPanel(new BorderLayout(8, 0));
         filaSur1.setBackground(EstilosUI.FONDO_TARJETA);
         filaSur1.add(lblSubtotales, BorderLayout.CENTER);
-        filaSur1.add(btnAnular, BorderLayout.EAST);
+        filaSur1.add(accionesFila1, BorderLayout.EAST);
 
         JRadioButton rbConjunta = new JRadioButton("Cuenta Conjunta", true);
         rbConjunta.setBackground(EstilosUI.FONDO_TARJETA);
@@ -545,6 +555,9 @@ public class PanelMesas extends JPanel {
         lblDetalle.setFont(EstilosUI.FUENTE_NEGRITA);
         sur.add(lblDetalle, BorderLayout.WEST);
 
+        JButton btnResumen = EstilosUI.botonSecundario("Ver Pedidos y Desglose");
+        btnResumen.addActionListener(e -> mostrarResumenVisita(visita));
+
         JButton btnCerrar = EstilosUI.botonExito("Cerrar Visita y Liberar Mesa");
         btnCerrar.addActionListener(e -> {
             try {
@@ -557,7 +570,12 @@ public class PanelMesas extends JPanel {
                 mostrarError(ex.getMessage());
             }
         });
-        sur.add(btnCerrar, BorderLayout.EAST);
+
+        JPanel accionesSur = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
+        accionesSur.setBackground(EstilosUI.FONDO_TARJETA);
+        accionesSur.add(btnResumen);
+        accionesSur.add(btnCerrar);
+        sur.add(accionesSur, BorderLayout.EAST);
 
         root.add(centro, BorderLayout.CENTER);
         root.add(sur, BorderLayout.SOUTH);
@@ -590,7 +608,17 @@ public class PanelMesas extends JPanel {
         return new PagoEfectivo();
     }
 
+    private void mostrarResumenVisita(Visita visita) {
+        JTextArea area = new JTextArea(visita.resumen(), 20, 54);
+        area.setEditable(false);
+        area.setFont(new Font("Monospaced", Font.PLAIN, 12));
+        JOptionPane.showMessageDialog(this, new JScrollPane(area),
+                "Resumen y Desglose — Mesa #" + visita.getNumeroMesa(),
+                JOptionPane.INFORMATION_MESSAGE);
+    }
+
     private void mostrarError(String mensaje) {
         JOptionPane.showMessageDialog(this, mensaje, "Validación de Negocio", JOptionPane.WARNING_MESSAGE);
     }
+
 }

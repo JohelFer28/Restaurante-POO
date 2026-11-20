@@ -19,6 +19,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 import java.awt.BorderLayout;
@@ -41,7 +42,7 @@ public class PanelEstadisticas extends JPanel {
     private final JLabel lblKpiVisitas = new JLabel("0");
     private final JLabel lblKpiTicket = new JLabel("₡0");
     private final JLabel lblKpiTop = new JLabel("-");
-    private final JLabel lblExplicacion = new JLabel(" ");
+    private final JTextArea txtExplicacion = new JTextArea(4, 80);
 
     private final DefaultTableModel modTopItems = new DefaultTableModel(
             new String[]{"Pos.", "Artículo", "Categoría", "Unidades", "Monto Generado"}, 0) {
@@ -87,9 +88,14 @@ public class PanelEstadisticas extends JPanel {
         gridReportes.add(envolverTabla(modCategorias, "4. Ingresos por Categoría de Menú"));
         centro.add(gridReportes, BorderLayout.CENTER);
 
-        lblExplicacion.setFont(EstilosUI.FUENTE_PEQUENA);
-        lblExplicacion.setForeground(EstilosUI.TEXTO_SECUNDARIO);
-        centro.add(lblExplicacion, BorderLayout.SOUTH);
+        txtExplicacion.setEditable(false);
+        txtExplicacion.setLineWrap(true);
+        txtExplicacion.setWrapStyleWord(true);
+        txtExplicacion.setFont(EstilosUI.FUENTE_PEQUENA);
+        txtExplicacion.setForeground(EstilosUI.TEXTO_SECUNDARIO);
+        txtExplicacion.setBackground(EstilosUI.FONDO_TARJETA);
+        txtExplicacion.setBorder(EstilosUI.bordeTarjeta("Explicación de Cálculos Aplicados"));
+        centro.add(txtExplicacion, BorderLayout.SOUTH);
 
         add(centro, BorderLayout.CENTER);
         refrescar();
@@ -178,42 +184,68 @@ public class PanelEstadisticas extends JPanel {
                     : top.get(0).getNombreOpcion() + " (" + top.get(0).getUnidadesVendidas() + ")");
 
             modTopItems.setRowCount(0);
-            int pos = 1;
-            for (ItemMasSolicitado item : top) {
-                modTopItems.addRow(new Object[]{
-                        pos++, item.getNombreOpcion(), item.getNombreCategoria(),
-                        item.getUnidadesVendidas(), Formato.colones(item.getMontoTotal())
-                });
+            if (top.isEmpty()) {
+                modTopItems.addRow(new Object[]{"-", "Sin pedidos activos en el rango seleccionado", "-", 0, Formato.colones(0)});
+            } else {
+                int pos = 1;
+                for (ItemMasSolicitado item : top) {
+                    modTopItems.addRow(new Object[]{
+                            pos++, item.getNombreOpcion(), item.getNombreCategoria(),
+                            item.getUnidadesVendidas(), Formato.colones(item.getMontoTotal())
+                    });
+                }
             }
 
             modMetodosPago.setRowCount(0);
-            for (Map.Entry<String, Integer> entry : ventas.getCobradoPorMetodo().entrySet()) {
-                String metodo = entry.getKey();
-                modMetodosPago.addRow(new Object[]{
-                        metodo,
-                        ventas.getPagosPorMetodo().getOrDefault(metodo, 0),
-                        Formato.colones(entry.getValue())
-                });
+            if (ventas.getCobradoPorMetodo().isEmpty()) {
+                modMetodosPago.addRow(new Object[]{"Sin pagos cobrados en el rango seleccionado", 0, Formato.colones(0)});
+            } else {
+                for (Map.Entry<String, Integer> entry : ventas.getCobradoPorMetodo().entrySet()) {
+                    String metodo = entry.getKey();
+                    modMetodosPago.addRow(new Object[]{
+                            metodo,
+                            ventas.getPagosPorMetodo().getOrDefault(metodo, 0),
+                            Formato.colones(entry.getValue())
+                    });
+                }
             }
 
             modMeseros.setRowCount(0);
-            for (RendimientoMesero rm : visitas.getPorMesero()) {
-                modMeseros.addRow(new Object[]{
-                        rm.getMesero(), rm.getVisitasAtendidas(),
-                        rm.getComensalesAtendidos(), Formato.colones(rm.getTotalFacturado())
-                });
+            if (visitas.getPorMesero().isEmpty()) {
+                modMeseros.addRow(new Object[]{"Sin visitas cerradas en el rango seleccionado", 0, 0, Formato.colones(0)});
+            } else {
+                for (RendimientoMesero rm : visitas.getPorMesero()) {
+                    modMeseros.addRow(new Object[]{
+                            rm.getMesero(), rm.getVisitasAtendidas(),
+                            rm.getComensalesAtendidos(), Formato.colones(rm.getTotalFacturado())
+                    });
+                }
             }
 
             modCategorias.setRowCount(0);
-            for (IngresoCategoria ic : categorias) {
-                modCategorias.addRow(new Object[]{
-                        ic.getCategoria(), ic.getUnidades(),
-                        Formato.colones(ic.getMonto()),
-                        String.format("%.1f%%", ic.getPorcentaje())
-                });
+            if (categorias.isEmpty()) {
+                modCategorias.addRow(new Object[]{"Sin ingresos registrados en el rango seleccionado", 0, Formato.colones(0), "0.0%"});
+            } else {
+                for (IngresoCategoria ic : categorias) {
+                    modCategorias.addRow(new Object[]{
+                            ic.getCategoria(), ic.getUnidades(),
+                            Formato.colones(ic.getMonto()),
+                            String.format("%.1f%%", ic.getPorcentaje())
+                    });
+                }
             }
 
-            lblExplicacion.setText(ventas.getExplicacion() + " | " + visitas.getExplicacion());
+            String expTop = top.isEmpty()
+                    ? "1. Artículos más solicitados: sin pedidos activos en el rango."
+                    : "1. Artículos más solicitados: suma unidades y monto de pedidos activos cuya fecha de pedido está en el rango (" + top.size() + " artículos).";
+            String expCat = categorias.isEmpty()
+                    ? "4. Ingresos por categoría: sin consumo activo en el rango."
+                    : "4. Ingresos por categoría: suma los subtotales activos del rango por categoría y calcula su porcentaje sobre el total.";
+
+            txtExplicacion.setText(expTop + "\n"
+                    + "2. Ventas cobradas: " + ventas.getExplicacion() + "\n"
+                    + "3. Visitas cerradas: " + visitas.getExplicacion() + "\n"
+                    + expCat);
         } catch (DateTimeParseException dtpe) {
             JOptionPane.showMessageDialog(this, "Formato de fecha inválido. Use AAAA-MM-DD (ejemplo: 2026-11-20).",
                     "Fecha Inválida", JOptionPane.WARNING_MESSAGE);
