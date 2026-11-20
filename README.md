@@ -60,4 +60,4 @@ Proyecto de **Programación Orientada a Objetos** — Instituto Tecnológico de 
 - [x] Parte 5: filtro calórico (patrón Strategy)
 - [x] Parte 6: estadísticas (Observer) y datos precargados
 - [x] Parte 7: interfaz gráfica (Swing)
-- [ ] Parte 8: pruebas finales, empaquetado ejecutable y documentación
+- [X] Parte 8: pruebas finales, empaquetado ejecutable y documentación
