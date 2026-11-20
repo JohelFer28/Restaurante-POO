@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-// observador concreto que conserva la auditoria cronologica de eventos del sistema
+// observador concreto que guarda el historial cronologico de eventos para auditoria
 public class BitacoraEventos implements ObservadorRestaurante {
     private final List<EventoRestaurante> eventos = new ArrayList<>();
 
@@ -15,6 +15,7 @@ public class BitacoraEventos implements ObservadorRestaurante {
         }
     }
 
+    // copia de solo lectura para que nadie borre registros de auditoria desde afuera
     public List<EventoRestaurante> getEventos() {
         return Collections.unmodifiableList(new ArrayList<>(eventos));
     }

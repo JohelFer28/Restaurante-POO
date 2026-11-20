@@ -14,14 +14,14 @@ import restaurante.observador.BitacoraEventos;
 
 import java.util.List;
 
-// datos precargados para demostracion y pruebas
+// precarga el menu inicial y visitas cerradas para demostracion y pruebas
 public final class DatosDemo {
     private DatosDemo() { }
 
     public static Menu crearMenuDemo() {
         Menu m = new Menu();
         try {
-            // orden: nombre, categoria, descripcion, calorias, precio en colones
+            // orden de parametros: nombre, categoria, descripcion, calorias, precio entero en colones
             m.agregarOpcion("Arroz blanco", m.buscarCategoria("Guarniciones"), "Arroz blanco cocido al vapor", 180, 1500);
             m.agregarOpcion("Puré de papa", m.buscarCategoria("Guarniciones"), "Puré cremoso con mantequilla", 220, 1800);
             m.agregarOpcion("Papas fritas", m.buscarCategoria("Guarniciones"), "Papas en bastones fritas", 365, 2200);
@@ -46,7 +46,7 @@ public final class DatosDemo {
             m.agregarOpcion("Refresco natural", m.buscarCategoria("Bebidas"), "Fruta de temporada", 150, 1600);
             m.agregarOpcion("Café americano", m.buscarCategoria("Bebidas"), "Café negro sin azúcar", 5, 1300);
 
-            // opciones precargadas como no disponibles para pruebas de filtrado y validacion
+            // se dejan dos opciones desactivadas desde el inicio para probar filtros y bloqueo de pedidos
             OpcionMenu corvina = m.agregarOpcion("Corvina al ajillo", m.buscarCategoria("Proteínas"),
                     "Filete de corvina en salsa de ajo", 340, 6800);
             m.desactivarOpcion(corvina.getId());
@@ -60,7 +60,7 @@ public final class DatosDemo {
         return m;
     }
 
-    // restaurante limpio (8 mesas y menu precargado) usado por los tests unitarios
+    // restaurante limpio con 8 mesas libres usado por los tests unitarios
     public static Restaurante crearRestauranteDemo() {
         try {
             return new Restaurante(8, crearMenuDemo());
@@ -69,49 +69,49 @@ public final class DatosDemo {
         }
     }
 
-    // restaurante con visitas cerradas precargadas para que Estadisticas e Historial tengan datos al iniciar la GUI
+    // simula 3 visitas cerradas al arrancar la app para que estadisticas e historial tengan datos reales
     public static Restaurante crearRestauranteConHistorialDemo(BitacoraEventos bitacora) {
         Restaurante r = crearRestauranteDemo();
         if (bitacora != null) {
             r.agregarObservador(bitacora);
         }
         try {
-            // Visita historica 1 (Mesa 2 - cuenta conjunta en Tarjeta)
+            // visita 1 en mesa 2 con modalidad conjunta y pago en tarjeta
             r.abrirVisita(2, new Mesero("Carlos"), List.of("Valeria", "Diego"));
-            r.agregarPedido(2, "Valeria", 7, 1);  // Salmon al horno (7500)
-            r.agregarPedido(2, "Valeria", 10, 1); // Ensalada mixta (2500)
-            r.agregarPedido(2, "Valeria", 16, 1); // Agua natural (1000)
-            r.agregarPedido(2, "Diego", 6, 1);    // Filete de res (6500)
-            r.agregarPedido(2, "Diego", 3, 1);    // Papas fritas (2200)
-            r.agregarPedido(2, "Diego", 17, 1);   // Limonada (1500)
+            r.agregarPedido(2, "Valeria", 7, 1);
+            r.agregarPedido(2, "Valeria", 10, 1);
+            r.agregarPedido(2, "Valeria", 16, 1);
+            r.agregarPedido(2, "Diego", 6, 1);
+            r.agregarPedido(2, "Diego", 3, 1);
+            r.agregarPedido(2, "Diego", 17, 1);
             r.solicitarCuenta(2, ModalidadCuenta.CONJUNTA);
             r.registrarPago(2, null, 21200, new PagoTarjeta());
             r.cerrarVisita(2);
 
-            // Visita historica 2 (Mesa 4 - pagos individuales con SINPE y Efectivo)
+            // visita 2 en mesa 4 con pagos individuales por cada comensal
             r.abrirVisita(4, new Mesero("Sofía"), List.of("Mateo", "Camila", "Andrés"));
-            r.agregarPedido(4, "Mateo", 5, 1);    // Pechuga a la plancha (4500)
-            r.agregarPedido(4, "Mateo", 1, 1);    // Arroz blanco (1500)
-            r.agregarPedido(4, "Camila", 8, 1);   // Tofu salteado (4000)
-            r.agregarPedido(4, "Camila", 9, 1);   // Ensalada Cesar (3000)
-            r.agregarPedido(4, "Camila", 19, 1);  // Cafe americano (1300)
-            r.agregarPedido(4, "Andrés", 5, 1);   // Pechuga a la plancha (4500)
-            r.agregarPedido(4, "Andrés", 15, 1);  // Brownie (2600)
-            r.agregarPedido(4, "Andrés", 18, 1);  // Refresco natural (1600)
+            r.agregarPedido(4, "Mateo", 5, 1);
+            r.agregarPedido(4, "Mateo", 1, 1);
+            r.agregarPedido(4, "Camila", 8, 1);
+            r.agregarPedido(4, "Camila", 9, 1);
+            r.agregarPedido(4, "Camila", 19, 1);
+            r.agregarPedido(4, "Andrés", 5, 1);
+            r.agregarPedido(4, "Andrés", 15, 1);
+            r.agregarPedido(4, "Andrés", 18, 1);
             r.solicitarCuenta(4, ModalidadCuenta.INDIVIDUAL);
             r.registrarPago(4, "Mateo", 6000, new PagoSinpe());
             r.registrarPago(4, "Camila", 8300, new PagoTarjeta());
             r.registrarPago(4, "Andrés", 8700, new PagoEfectivo());
             r.cerrarVisita(4);
 
-            // Visita historica 3 (Mesa 6 - grupo familiar)
+            // visita 3 en mesa 6 con pago mixto (efectivo y sinpe)
             r.abrirVisita(6, new Mesero("Carlos"), List.of("Elena", "Roberto"));
-            r.agregarPedido(6, "Elena", 5, 1);    // Pechuga (4500)
-            r.agregarPedido(6, "Elena", 4, 1);    // Gallo pinto (1700)
-            r.agregarPedido(6, "Elena", 12, 1);   // Flan de coco (2200)
-            r.agregarPedido(6, "Roberto", 6, 1);  // Filete de res (6500)
-            r.agregarPedido(6, "Roberto", 2, 1);  // Pure de papa (1800)
-            r.agregarPedido(6, "Roberto", 17, 2); // 2 Limonadas (3000)
+            r.agregarPedido(6, "Elena", 5, 1);
+            r.agregarPedido(6, "Elena", 4, 1);
+            r.agregarPedido(6, "Elena", 12, 1);
+            r.agregarPedido(6, "Roberto", 6, 1);
+            r.agregarPedido(6, "Roberto", 2, 1);
+            r.agregarPedido(6, "Roberto", 17, 2);
             r.solicitarCuenta(6, ModalidadCuenta.CONJUNTA);
             r.registrarPago(6, null, 10000, new PagoEfectivo());
             r.registrarPago(6, null, 9700, new PagoSinpe());

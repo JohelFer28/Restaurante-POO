@@ -17,7 +17,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-// servicio de consultas estadisticas por rango de fechas (Seccion 3.6 del enunciado)
+// calcula metricas del restaurante filtrando por rango de fechas y respetando cada marca de tiempo
 public class ServicioEstadisticas {
 
     public static final class ItemMasSolicitado {
@@ -148,6 +148,7 @@ public class ServicioEstadisticas {
         Map<String, Integer> montoMetodo = new LinkedHashMap<>();
         Map<String, Integer> conteoMetodo = new LinkedHashMap<>();
 
+        // se evalua la fecha propia de cada pago registrado, incluso en mesas aun abiertas
         for (Visita v : todasLasVisitas()) {
             for (Pago p : v.getPagos()) {
                 if (enRango(p.getFecha().toLocalDate(), desde, hasta)) {
@@ -175,6 +176,7 @@ public class ServicioEstadisticas {
         Map<String, Integer> montoPorOpcion = new LinkedHashMap<>();
         Map<String, String> categoriaPorOpcion = new LinkedHashMap<>();
 
+        // solo se toman pedidos activos (no anulados) dentro del rango de fecha del pedido
         for (Visita v : todasLasVisitas()) {
             for (LineaPedido l : v.getPedidosActivos()) {
                 if (!enRango(l.getFecha().toLocalDate(), desde, hasta)) continue;
@@ -197,6 +199,7 @@ public class ServicioEstadisticas {
             ));
         }
 
+        // desempate determinista: primero unidades, luego monto y por ultimo orden alfabetico
         resultado.sort(Comparator.comparingInt(ItemMasSolicitado::getUnidadesVendidas).reversed()
                 .thenComparing(Comparator.comparingInt(ItemMasSolicitado::getMontoTotal).reversed())
                 .thenComparing(ItemMasSolicitado::getNombreOpcion));
@@ -212,6 +215,7 @@ public class ServicioEstadisticas {
 
         Map<String, int[]> datosMesero = new LinkedHashMap<>();
 
+        // este reporte usa unicamente el historial de visitas cerradas filtrando por fecha de cierre
         for (Visita v : restaurante.getHistorial()) {
             if (v.getCierre() == null) continue;
             if (!enRango(v.getCierre().toLocalDate(), desde, hasta)) continue;
@@ -278,6 +282,7 @@ public class ServicioEstadisticas {
         return resultado;
     }
 
+    // junta visitas cerradas y abiertas para que ventas y pedidos reflejen actividad en tiempo real
     private List<Visita> todasLasVisitas() {
         List<Visita> todas = new ArrayList<>(restaurante.getHistorial());
         for (Mesa m : restaurante.getMesas()) {

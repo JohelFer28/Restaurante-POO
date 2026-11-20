@@ -17,6 +17,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 
+// ventana principal que implementa ObservadorRestaurante para refrescar todas las pestanas
+// automaticamente cuando ocurre algun cambio en el dominio
 public class VentanaPrincipal extends JFrame implements ObservadorRestaurante {
     private Restaurante restaurante;
     private final BitacoraEventos bitacora;
@@ -84,6 +86,7 @@ public class VentanaPrincipal extends JFrame implements ObservadorRestaurante {
 
     @Override
     public void alOcurrirEvento(EventoRestaurante evento) {
+        // cada vez que cambia algo en el restaurante se actualizan todas las vistas
         lblBarraEstado.setText("Último evento: " + evento);
         panelMesas.refrescar();
         panelMenu.refrescar();

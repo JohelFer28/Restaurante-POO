@@ -15,8 +15,8 @@ import restaurante.util.Formato;
 import java.util.ArrayList;
 import java.util.List;
 
-// punto de entrada del dominio y Sujeto Observable (patron Observer):
-// notifica cambios relevantes a las vistas y bitacoras sin acoplarse a Swing
+// fachada del dominio y sujeto observable del patron Observer
+// centraliza las operaciones del restaurante para que la vista no toque el estado interno directo
 public class Restaurante {
     private final List<Mesa> mesas = new ArrayList<>();
     private final List<Visita> historial = new ArrayList<>();
@@ -36,7 +36,7 @@ public class Restaurante {
         this.menu = menu;
     }
 
-    // gestion de observadores (Patron Observer)
+    // registro de observadores sin acoplar el dominio a clases de Swing
 
     public void agregarObservador(ObservadorRestaurante observador) {
         if (observador != null && !observadores.contains(observador)) {
@@ -50,6 +50,7 @@ public class Restaurante {
 
     private void notificar(TipoEventoRestaurante tipo, int numeroMesa, String descripcion) {
         EventoRestaurante evento = new EventoRestaurante(tipo, numeroMesa, descripcion);
+        // se recorre una copia por si algun observador se agrega o quita durante la notificacion
         for (ObservadorRestaurante obs : List.copyOf(observadores)) {
             obs.alOcurrirEvento(evento);
         }
@@ -59,7 +60,7 @@ public class Restaurante {
         notificar(TipoEventoRestaurante.MENU_ACTUALIZADO, 0, detalle);
     }
 
-    // operaciones del dominio
+    // operaciones principales del ciclo de atencion
 
     public Mesa obtenerMesa(int numero) throws MesaNoDisponibleException {
         for (Mesa m : mesas) {
@@ -79,7 +80,7 @@ public class Restaurante {
 
     public LineaPedido agregarPedido(int numeroMesa, String alias, int idOpcion, int cantidad)
             throws MesaNoDisponibleException, OpcionNoEncontradaException,
-            PedidoNoPermitidoException, DatoInvalidoException {
+                   PedidoNoPermitidoException, DatoInvalidoException {
         Mesa mesa = obtenerMesa(numeroMesa);
         OpcionMenu opcion = menu.obtener(idOpcion);
         LineaPedido linea = mesa.agregarPedido(alias, opcion, cantidad);
@@ -91,6 +92,7 @@ public class Restaurante {
 
     public void anularPedido(int numeroMesa, int idLinea, String motivo)
             throws MesaNoDisponibleException, PedidoNoPermitidoException, DatoInvalidoException {
+        // el pedido no se borra de la lista, queda marcado como anulado para auditoria
         obtenerMesa(numeroMesa).anularPedido(idLinea, motivo);
         notificar(TipoEventoRestaurante.PEDIDO_ANULADO, numeroMesa,
                 "Mesa " + numeroMesa + " | Pedido #" + idLinea + " anulado (" + motivo.trim() + ").");
@@ -115,6 +117,7 @@ public class Restaurante {
 
     public Visita cerrarVisita(int numeroMesa)
             throws MesaNoDisponibleException, TransicionInvalidaException, SaldoPendienteException {
+        // al cerrar se guarda en el historial antes de liberar la mesa para estadisticas futuras
         Visita cerrada = obtenerMesa(numeroMesa).cerrarVisita();
         historial.add(cerrada);
         notificar(TipoEventoRestaurante.VISITA_CERRADA, numeroMesa,
@@ -123,6 +126,7 @@ public class Restaurante {
         return cerrada;
     }
 
+    // se devuelven listas inmutables para evitar que la vista altere el estado interno
     public List<Mesa> getMesas() { return List.copyOf(mesas); }
     public List<Visita> getHistorial() { return List.copyOf(historial); }
     public Menu getMenu() { return menu; }
