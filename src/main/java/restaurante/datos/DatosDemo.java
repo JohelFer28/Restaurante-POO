@@ -1,9 +1,9 @@
 package restaurante.datos;
 
 import restaurante.dominio.Menu;
-<<<<<<< HEAD
 import restaurante.dominio.Mesero;
 import restaurante.dominio.ModalidadCuenta;
+import restaurante.dominio.OpcionMenu;
 import restaurante.dominio.PagoEfectivo;
 import restaurante.dominio.PagoSinpe;
 import restaurante.dominio.PagoTarjeta;
@@ -15,12 +15,6 @@ import restaurante.observador.BitacoraEventos;
 import java.util.List;
 
 // datos precargados para demostracion y pruebas
-=======
-import restaurante.dominio.Restaurante;
-import restaurante.excepciones.DatoInvalidoException;
-
-// menu precargado para la demostracion (el enunciado pide que el sistema ya traiga opciones)
->>>>>>> 5d5290bbb7032902a2600d8a5ac7821032c2fa98
 public final class DatosDemo {
     private DatosDemo() { }
 
@@ -51,17 +45,22 @@ public final class DatosDemo {
             m.agregarOpcion("Limonada", m.buscarCategoria("Bebidas"), "Limonada natural", 110, 1500);
             m.agregarOpcion("Refresco natural", m.buscarCategoria("Bebidas"), "Fruta de temporada", 150, 1600);
             m.agregarOpcion("Café americano", m.buscarCategoria("Bebidas"), "Café negro sin azúcar", 5, 1300);
-        } catch (DatoInvalidoException e) {
+
+            // opciones precargadas como no disponibles para pruebas de filtrado y validacion
+            OpcionMenu corvina = m.agregarOpcion("Corvina al ajillo", m.buscarCategoria("Proteínas"),
+                    "Filete de corvina en salsa de ajo", 340, 6800);
+            m.desactivarOpcion(corvina.getId());
+
+            OpcionMenu tresLeches = m.agregarOpcion("Tres leches", m.buscarCategoria("Postres"),
+                    "Bizcocho artesanal bañado en tres leches", 390, 2500);
+            m.desactivarOpcion(tresLeches.getId());
+        } catch (RestauranteException e) {
             throw new IllegalStateException("Los datos de demostración son inválidos", e);
         }
         return m;
     }
 
-<<<<<<< HEAD
     // restaurante limpio (8 mesas y menu precargado) usado por los tests unitarios
-=======
-    // restaurante con 8 mesas y el menu de demostracion
->>>>>>> 5d5290bbb7032902a2600d8a5ac7821032c2fa98
     public static Restaurante crearRestauranteDemo() {
         try {
             return new Restaurante(8, crearMenuDemo());
@@ -69,7 +68,6 @@ public final class DatosDemo {
             throw new IllegalStateException("Los datos de demostración son inválidos", e);
         }
     }
-<<<<<<< HEAD
 
     // restaurante con visitas cerradas precargadas para que Estadisticas e Historial tengan datos al iniciar la GUI
     public static Restaurante crearRestauranteConHistorialDemo(BitacoraEventos bitacora) {
@@ -123,6 +121,4 @@ public final class DatosDemo {
         }
         return r;
     }
-=======
->>>>>>> 5d5290bbb7032902a2600d8a5ac7821032c2fa98
 }
